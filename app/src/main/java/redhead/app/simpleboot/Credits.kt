@@ -46,7 +46,7 @@ fun CreditsScreen(onBack: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("SimpleBoot - v2.0") },
+                title = { Text("SimpleBoot - v2.1") },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -66,10 +66,10 @@ fun CreditsScreen(onBack: () -> Unit) {
                 .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // RedHead logo
+            // Skidworks logo
             Image(
-                painter = painterResource(id = R.drawable.redhead_logo),
-                contentDescription = "RedHead Industries Logo",
+                painter = painterResource(id = R.drawable.skidworks_logo),
+                contentDescription = "Skidworks Logo",
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .aspectRatio(3.2f)
@@ -83,7 +83,7 @@ fun CreditsScreen(onBack: () -> Unit) {
                 contentDescription = "Matthew DaLuz",
                 modifier = Modifier
                     .size(112.dp)
-                    .padding(bottom = 12.dp)
+                    .padding(bottom = 1.dp)
                     .clip(CircleShape)
                     .border(2.dp, MaterialTheme.colorScheme.onBackground, CircleShape),
                 contentScale = ContentScale.Crop
@@ -96,7 +96,7 @@ fun CreditsScreen(onBack: () -> Unit) {
             )
 
             Text(
-                text = "Lead Developer, RedHead Industries\nmatthewdaluz@redheadindustries.xyz",
+                text = "Lead Developer, Skidworks\nmatthewdaluz@skidworks.sh",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.padding(vertical = 8.dp)
@@ -105,7 +105,7 @@ fun CreditsScreen(onBack: () -> Unit) {
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
 
             Text(
-                text = "SimpleBoot is a free and open-source Android application developed under RedHead Technologies.",
+                text = "SimpleBoot is a free and open-source Android application developed under Skidworks.",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodyMedium
             )
@@ -121,17 +121,17 @@ fun CreditsScreen(onBack: () -> Unit) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(onClick = {
-                val url = "https://redheadindustries.xyz/".toUri()
+                val url = "https://skidworks.sh/".toUri()
                 val intent = Intent(Intent.ACTION_VIEW, url)
                 context.startActivity(intent)
             }) {
-                Text("Visit RedHead Industries")
+                Text("Visit Skidworks")
             }
 
             Spacer(modifier = Modifier.height(40.dp))
 
             Text(
-                text = "SimpleBoot v2.0\n© 2025 RedHead Industries",
+                text = "SimpleBoot v2.1\n© 2026 Skidworks",
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Light
