@@ -1,20 +1,23 @@
 [versions]
-agp = "8.13.2"
+agp = "9.2.1"
+core = "5.0.4"
 desugar_jdk_libs = "2.1.5"
-kotlin = "2.3.21"
-coreKtx = "1.18.0"
+kotlin = "2.4.0"
+coreKtx = "1.19.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
 espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.10.0"
 activityCompose = "1.13.0"
-composeBom = "2026.04.01"
+composeBom = "2026.05.01"
 benchmarkGradlePlugin = "1.4.1"
 materialIconsExtended = "1.7.8"
+service = "5.0.4"
 
 [libraries]
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+core = { module = "com.github.topjohnwu.libsu:core", version.ref = "core" }
 desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugar_jdk_libs" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -30,6 +33,7 @@ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-man
 androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-benchmark-gradle-plugin = { group = "androidx.benchmark", name = "benchmark-gradle-plugin", version.ref = "benchmarkGradlePlugin" }
+service = { module = "com.github.topjohnwu.libsu:service", version.ref = "service" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

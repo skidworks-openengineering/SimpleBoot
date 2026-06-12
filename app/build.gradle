@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace 'redhead.app.simpleboot'
-    compileSdk 36
+    compileSdk 37
 
     defaultConfig {
         applicationId "redhead.app.simpleboot"
         minSdk 30
-        targetSdk 35
+        targetSdk 37
         versionCode 1
         versionName "2.1"
 
@@ -25,12 +25,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
         coreLibraryDesugaringEnabled true
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = "21"
     }
     buildFeatures {
         compose true
@@ -50,8 +50,8 @@ dependencies {
     implementation libs.androidx.benchmark.gradle.plugin
     coreLibraryDesugaring libs.desugar.jdk.libs
     // Add libsu (topjohnwu) root access support
-    implementation 'com.github.topjohnwu.libsu:core:5.0.4'
-    implementation 'com.github.topjohnwu.libsu:service:5.0.4'
+    implementation libs.core
+    implementation libs.service
 
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
