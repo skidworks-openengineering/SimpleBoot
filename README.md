@@ -1,20 +1,28 @@
 > [!IMPORTANT]
-> ## SimpleBoot is temporarily broken!
-> I just found out that SimpleBoot currently no longer works on LineageOS 24.0 (and later), probably because Magisk probably changed how their rooting stuff works or something.
-> I will get this fixed ASAP, and I will also fix whatever bugs that I can from the bug reports.
+> **Magisk 31.1+:** Open Magisk → Superuser and grant SimpleBoot access before using it.
+> Magisk no longer displays an automatic permission prompt. Return to SimpleBoot and
+> tap **Retry root access** if needed. Older root managers may still show a prompt.
 >
-> Also, sorry for the complete lack of updates. I've been busy with life and mental/physical health problems. I plan to try working on projects again.
+> SimpleBoot now uses the package `skidworks.app.simpleboot`. Android treats it as
+> a separate app: grant root and all-files access again. Private preferences and
+> mount state from `redhead.app.simpleboot` do not transfer. Unmount images in the
+> old app before switching; shared `SimpleBootISOs` and `SimpleBootLogs` directories
+> remain in place.
+>
+> The app targets Android 17 (API 37), supports Android 11+, and uses libsu 6.0.0.
+> Root access does not guarantee USB mass-storage support: the device kernel and
+> USB gadget configuration must support it. Physical-device validation is required.
 
 ---
 
 # SimpleBoot – Turn your phone into a bootable USB device!
-**Version:** v2.1 [BETA] “Monster – Milestone 2”  
+**Version:** v3.0 “Equinox - Milestone 3”  
 **License:** GNU General Public License v3 (GPLv3)  
-**Developer:** RedHead Industries (Technologies Branch) + Matthew DaLuz [@matthewdaluz](https://github.com/matthewdaluz)
+**Developer:** Skidworks + Matthew DaLuz [@matthewdaluz](https://github.com/matthewdaluz)
 
 **SimpleBoot** is a powerful, root-required Android app that transforms your phone into a fully bootable USB device. Mount ISO/IMG files via **ConfigFS**, **Legacy mass_storage**, or raw **Loopback** mode and boot directly into live systems on any PC.
 
-> Successor to DriveDroid and PhoneStick, built for Android 11+ with full modern kernel and ConfigFS support.
+> Successor to DriveDroid and PhoneStick, built for Android 16+ with full modern kernel and ConfigFS support.
 
 ---
 
@@ -25,7 +33,6 @@
   - `ConfigFS`: For most modern kernels
   - `Legacy`: For older Android USB stacks
   - `Loopback`: For direct mount w/o USB gadget (testing or chaining)
-- 💿 **CD-ROM boot mode** with forced descriptors for BIOS/UEFI compatibility (Deprecated. To be removed in later builds.)
 - 🔐 **Root shell integration** using [`libsu`](https://github.com/topjohnwu/libsu)
 - 🧠 **Complete logging** of all mount/unmount operations (`SimpleBootLogs`)
 - 🌓 **Light/Dark mode** Jetpack Compose UI
@@ -122,13 +129,7 @@ Pull requests welcome for:
 ## 🙏 Credits
 
 - **Lead Dev:** [@matthewdaluz](https://github.com/matthewdaluz)
-- **AI Assistants:** ChatGPT + DeepSeek
-- **Special Thanks:** The open-source Android root community
+- **AI Assistants:** Codex + GitHub Copilot
+- **Special Thanks:** The open-source Android root community!
 
 ---
-
-## 🔚 Final Words
-
-SimpleBoot gives Android users full control over USB boot from their pocket. Whether you're an IT tech, a Linux user, or just want to carry live systems on your phone — this tool is the bootloader companion you've been missing.
-
-> ✨ Mount. Boot. Reboot. Simple. ✨
