@@ -1,12 +1,9 @@
 > [!IMPORTANT]
-> ## Rebranding Notice
-> Beginning on **May 10th, 2026 at 12:00 AM EDT**, **RedHead Industries** is being officially rebranded to **Skidworks**.
+> ## SimpleBoot is temporarily broken!
+> I just found out that SimpleBoot currently no longer works on LineageOS 24.0 (and later), probably because Magisk probably changed how their rooting stuff works or something.
+> I will get this fixed ASAP, and I will also fix whatever bugs that I can from the bug reports.
 >
-> During this transition period, repositories, websites, documentation, domains, branding assets, and organization names may still temporarily reference **RedHead Industries**.
->
-> Skidworks is the direct continuation and successor of RedHead Industries.
->
-> Thank you for your patience during this rebranding process.
+> Also, sorry for the complete lack of updates. I've been busy with life and mental/physical health problems. I plan to try working on projects again.
 
 ---
 
