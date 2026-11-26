@@ -12,8 +12,14 @@ On a physical Android 17 device with Magisk 31.1 or newer:
 4. In Magisk's Superuser tab, enable the new SimpleBoot package. Return to
    SimpleBoot: it should detect access, replacing the cached non-root shell.
 5. Grant all-files access; return from Settings and confirm ISO discovery.
-6. Select an ISO and mount on a supported kernel, verify host USB enumeration,
-   then unmount. Check responsiveness and that repeated taps do not overlap jobs.
+6. With USB debugging enabled and File Transfer selected, confirm that the host
+   can see the device in `adb devices` and transfer files over MTP. Mount an ISO
+   using ConfigFS and confirm that it appears as USB storage. Unmount it and
+   verify that both ADB and MTP return without a reboot or cable reconnect.
+   Repeat with USB debugging disabled and confirm it stays disabled.
+   Verify on the Samsung Galaxy S22 Ultra with KernelSU and One UI 7 from issue #2
+   when available. Check that loopback mounting and unmounting leave ADB and MTP
+   connected, and that repeated taps do not overlap jobs.
 7. Rotate/resize during setup and verify root checks and layout remain usable.
 8. Export logs and verify the receiving app can read the shared file URI.
 

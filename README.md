@@ -37,7 +37,7 @@
 - 🧠 **Complete logging** of all mount/unmount operations (`SimpleBootLogs`)
 - 🌓 **Light/Dark mode** Jetpack Compose UI
 - 🛠️ **Per-ISO selection** of mount method
-- ⚙️ **Persistent preferences** for read-only mounting
+- 💾 **Read-only or read/write mounting** per image. Read-only is the default. CD-ROM mode is always read-only.
 - 📤 Export logs and diagnostics for debugging
 
 ---
