@@ -16,7 +16,6 @@
 ---
 
 # SimpleBoot – Turn your phone into a bootable USB device!
-**Version:** v3.0 “Equinox - Milestone 3”  
 **License:** GNU General Public License v3 (GPLv3)  
 **Developer:** Skidworks + Matthew DaLuz [@matthewdaluz](https://github.com/matthewdaluz)
 
