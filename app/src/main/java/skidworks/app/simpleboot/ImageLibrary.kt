@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.MoreVert
@@ -105,8 +106,18 @@ internal fun SimpleBootTopBar(
 }
 
 @Composable
-internal fun LibraryActions(onShareLog: () -> Unit, onCredits: () -> Unit) {
+internal fun LibraryActions(
+    onShareLog: () -> Unit,
+    onCredits: () -> Unit,
+    onAddBootable: (() -> Unit)? = null,
+    canAddBootable: Boolean = true
+) {
     var expanded by remember { mutableStateOf(false) }
+    if (onAddBootable != null) {
+        IconButton(onClick = onAddBootable, enabled = canAddBootable) {
+            Icon(Icons.Outlined.Add, contentDescription = "Add bootable")
+        }
+    }
     IconButton(onClick = onShareLog) {
         Icon(Icons.Outlined.Share, contentDescription = "Export log")
     }
@@ -136,7 +147,8 @@ internal fun ImageLibrary(
     onMethodChange: (MountMethod) -> Unit,
     onUsbModeChange: (UsbMode) -> Unit,
     onImageClick: (IsoFile) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    importing: Boolean = false
 ) {
     val missingMount = mounted?.takeUnless { mount -> images.any { it.path == mount.filePath } }
     val visibleImages = if (missingMount == null) images else {
@@ -151,7 +163,7 @@ internal fun ImageLibrary(
             item {
                 MountOptionsCard(method, usbMode, !busy, onMethodChange, onUsbModeChange)
             }
-            item { MountStatus(mounted, busy) }
+            item { MountStatus(mounted, busy, importing) }
             item {
                 Text(
                     text = "Available Images",
@@ -171,7 +183,7 @@ internal fun ImageLibrary(
                         ) {
                             Text("No images found", style = MaterialTheme.typography.titleSmall)
                             Text(
-                                "Add ISO or IMG files to /storage/emulated/0/SimpleBootISOs.",
+                                "Place ISO or IMG files in /sdcard/SimpleBootISOs, or tap + to add a bootable.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -245,7 +257,7 @@ private fun MountOptionsCard(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun <T> MountOptionField(
+internal fun <T> MountOptionField(
     label: String,
     value: T,
     options: List<T>,
@@ -285,7 +297,7 @@ private fun <T> MountOptionField(
 }
 
 @Composable
-private fun MountStatus(mounted: MountStateStore.MountInfo?, busy: Boolean) {
+private fun MountStatus(mounted: MountStateStore.MountInfo?, busy: Boolean, importing: Boolean) {
     val colors = MaterialTheme.colorScheme
     Surface(
         shape = panelShape,
@@ -301,6 +313,7 @@ private fun MountStatus(mounted: MountStateStore.MountInfo?, busy: Boolean) {
                 )
                 Column(Modifier.weight(1f)) {
                     val label = when {
+                        importing -> "Creating bootable image…"
                         busy -> "Updating mount…"
                         mounted == null -> "No image mounted"
                         mounted.readOnly -> "Mounted read-only"
@@ -352,8 +365,9 @@ private fun ImageRow(image: IsoFile, mounted: Boolean, enabled: Boolean, onClick
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
+                val sourceLabel = if (image.isNetboot) "Network boot" else image.extractedType?.displayName
                 Text(
-                    text = image.path,
+                    text = sourceLabel?.let { "$it · ${image.path}" } ?: image.path,
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant,
                     maxLines = 1,

@@ -7,18 +7,27 @@ import java.text.DecimalFormat
 import kotlin.math.log10
 import kotlin.math.pow
 
+enum class ExtractedIsoType(val displayName: String) {
+    WINDOWS("Windows"),
+    LINUX("Linux")
+}
+
 /**
- * Represents an ISO or IMG file available for mounting.
+ * Represents a disk image available for mounting.
  * Includes debug utilities for diagnostics and readable logging.
  *
  * @param name  The display name of the file (e.g., "ubuntu.iso").
  * @param path  Full absolute path to the file on the device.
  * @param size  File size in bytes.
+ * @param extractedType  OS type for an image built from an extracted ISO.
+ * @param isNetboot  Whether the image was imported from a network boot link.
  */
 data class IsoFile(
     val name: String,
     val path: String,
-    val size: Long
+    val size: Long,
+    val extractedType: ExtractedIsoType? = null,
+    val isNetboot: Boolean = false
 ) {
     /**
      * Converts file size in bytes to a human-readable string (e.g., "2.3 GB").

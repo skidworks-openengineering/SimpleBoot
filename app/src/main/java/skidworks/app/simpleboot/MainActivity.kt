@@ -7,6 +7,7 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -48,13 +49,14 @@ class MainActivity : ComponentActivity() {
     private var hasRoot by mutableStateOf<Boolean?>(null)
     private var checkingRoot by mutableStateOf(false)
     private var resumeCount by mutableIntStateOf(0)
+    private val bootableImport by viewModels<BootableImportViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             SimpleBootTheme {
                 if (hasRoot == true) {
-                    AppScreen(resumeCount)
+                    AppScreen(resumeCount, bootableImport)
                 } else {
                     Scaffold(topBar = { SimpleBootTopBar() }) { padding ->
                         SetupPrompt(
@@ -99,7 +101,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun AppScreen(resumeCount: Int) {
+private fun AppScreen(resumeCount: Int, bootableImport: BootableImportViewModel) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
@@ -111,11 +113,13 @@ private fun AppScreen(resumeCount: Int) {
     var selectedMethod by rememberSaveable { mutableStateOf(MountMethod.CONFIGFS) }
     var selectedUsbMode by rememberSaveable { mutableStateOf(UsbMode.USB_HDD) }
     var showCredits by rememberSaveable { mutableStateOf(false) }
+    var bootableSource by rememberSaveable { mutableStateOf<BootableSource?>(null) }
     var operationInProgress by remember { mutableStateOf(false) }
+    val busy = operationInProgress || bootableImport.importing
 
-    LaunchedEffect(resumeCount, operationInProgress) {
+    LaunchedEffect(resumeCount, busy) {
         hasStorageAccess = Environment.isExternalStorageManager()
-        if (operationInProgress || !hasStorageAccess) return@LaunchedEffect
+        if (busy || !hasStorageAccess) return@LaunchedEffect
         val (files, mount) = withContext(Dispatchers.IO) {
             StorageManager.ensureDirectories()
             StorageManager.getIsoFileList() to MountController.currentMount(context)
@@ -124,8 +128,16 @@ private fun AppScreen(resumeCount: Int) {
         currentMount = mount
     }
 
+    val importMessage = bootableImport.message
+    LaunchedEffect(importMessage) {
+        if (importMessage != null) {
+            bootableImport.clearMessage()
+            coroutineScope.launch { snackbarHostState.showSnackbar(importMessage) }
+        }
+    }
+
     fun handleMount(iso: IsoFile, method: MountMethod, mode: UsbMode, readOnly: Boolean = true) {
-        if (operationInProgress) return
+        if (busy) return
         val unmounting = currentMount?.filePath == iso.path
         operationInProgress = true
         coroutineScope.launch {
@@ -163,7 +175,9 @@ private fun AppScreen(resumeCount: Int) {
                             coroutineScope.launch { snackbarHostState.showSnackbar("No log file available") }
                         }
                     },
-                    onCredits = { showCredits = true }
+                    onCredits = { showCredits = true },
+                    onAddBootable = if (hasStorageAccess) ({ bootableSource = BootableSource.CHOOSER }) else null,
+                    canAddBootable = !busy
                 )
             })
         },
@@ -175,7 +189,8 @@ private fun AppScreen(resumeCount: Int) {
                 mounted = currentMount,
                 method = selectedMethod,
                 usbMode = selectedUsbMode,
-                busy = operationInProgress,
+                busy = busy,
+                importing = bootableImport.importing,
                 onMethodChange = { selectedMethod = it },
                 onUsbModeChange = { selectedUsbMode = it },
                 onImageClick = { selectedIso = it },
@@ -184,7 +199,7 @@ private fun AppScreen(resumeCount: Int) {
         } else {
             SetupPrompt(
                 title = "Allow file access",
-                message = "SimpleBoot needs access to the ISO and IMG files on your device.",
+                message = "SimpleBoot needs access to the ISO files, disk images, and extracted ISO folders on your device.",
                 action = "Grant all-files access",
                 enabled = true,
                 onClick = {
@@ -197,11 +212,37 @@ private fun AppScreen(resumeCount: Int) {
         }
     }
 
+    if (hasStorageAccess) {
+        when (bootableSource) {
+            BootableSource.CHOOSER -> AddBootableSourceDialog(
+                onDismiss = { bootableSource = null },
+                onSelect = { bootableSource = it }
+            )
+            BootableSource.EXTRACTED_ISO -> AddBootableDialog(
+                resumeCount = resumeCount,
+                onDismiss = { bootableSource = null },
+                onAdd = { folder, type, label ->
+                    bootableImport.add(context, folder, type, label)
+                    bootableSource = null
+                }
+            )
+            BootableSource.NETBOOT_LINK -> AddNetbootDialog(
+                onDismiss = { bootableSource = null },
+                onAdd = { link ->
+                    bootableImport.addNetbootLink(context, link)
+                    bootableSource = null
+                }
+            )
+            null -> Unit
+        }
+    }
+
     val image = selectedIso
     if (image != null) {
         val mounted = currentMount?.takeIf { it.filePath == image.path }
         val usesUsb = selectedMethod != MountMethod.LOOPBACK
-        val allowsWrite = !usesUsb || selectedUsbMode != UsbMode.CD_ROM
+        val mode = if (image.extractedType != null || image.isNetboot) UsbMode.USB_HDD else selectedUsbMode
+        val allowsWrite = !usesUsb || mode != UsbMode.CD_ROM
         var readOnly by remember(image.path) { mutableStateOf(true) }
 
         AlertDialog(
@@ -212,7 +253,7 @@ private fun AppScreen(resumeCount: Int) {
                     Text(image.name)
                     if (mounted == null) {
                         Text("Mount method: ${selectedMethod.displayName}")
-                        if (usesUsb) Text("USB method: ${selectedUsbMode.displayName}")
+                        if (usesUsb) Text("USB method: ${mode.displayName}")
                         if (allowsWrite) {
                             Column(Modifier.selectableGroup()) {
                                 MountAccessOption("Read-only", readOnly) { readOnly = true }
@@ -230,7 +271,7 @@ private fun AppScreen(resumeCount: Int) {
             confirmButton = {
                 Button(onClick = {
                     LogManager.logToFile(context, "Mount action confirmed for ${image.name}")
-                    handleMount(image, selectedMethod, selectedUsbMode, readOnly = readOnly || !allowsWrite)
+                    handleMount(image, selectedMethod, mode, readOnly = readOnly || !allowsWrite)
                     selectedIso = null
                 }) { Text(if (mounted != null) "Unmount" else "Mount") }
             },

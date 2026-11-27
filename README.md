@@ -72,6 +72,29 @@
 
 ---
 
+## Boot from an extracted ISO
+
+1. Extract the full contents of the ISO directly into a folder under `/sdcard/SimpleBootables/`, for example `/sdcard/SimpleBootables/Windows10Live/`. Keep the `EFI/BOOT` directory and the rest of the source layout.
+2. Tap **+ → Extracted ISO**, choose the folder, and select **Windows** or **Linux**. For Linux media that searches for a specific volume label, enter the label if it fits FAT32's 11-character limit. SimpleBoot stores volume labels in uppercase.
+3. Tap **Add**. SimpleBoot writes a FAT32 disk image under `/sdcard/SimpleBootISOs/Bootables/Windows/` or `/sdcard/SimpleBootISOs/Bootables/Linux/`. The image appears in **Available Images**.
+4. Mount the new entry with a USB-capable mount method, then select the phone's USB drive in your PC's UEFI boot menu. Imported images use the USB HDD mode.
+
+The extracted media must support booting from FAT32 and include a UEFI bootloader for your PC's architecture. Some Linux distributions require the original ISO layout. FAT32 accepts individual files smaller than 4 GiB and cannot store symbolic links. For Windows media with a larger `sources/install.wim`, [split it into `install.swm` files](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/install-windows-from-a-usb-flash-drive) before adding the folder.
+
+---
+
+## Boot from a network boot link
+
+Tap **+ → Network boot link**, paste a direct HTTPS URL, then tap **Add**. SimpleBoot saves the image under `/sdcard/SimpleBootISOs/Bootables/Netboot/`. Mount it from **Available Images** and select the phone's USB drive from the PC's boot menu.
+
+- **UEFI application (`.efi`).** SimpleBoot places the executable at the USB boot path for its CPU architecture. For example, [Arch Linux Netboot](https://archlinux.org/releng/netboot/) offers `https://archlinux.org/static/netboot/ipxe-arch.efi` for x86-64 UEFI.
+- **iPXE script.** SimpleBoot creates an x86-64 UEFI image with iPXE. At boot it uses DHCP and loads the script from its original URL, so relative resource URLs work as they do when you run the script over the network.
+- **Bootable USB image (`.usb`).** SimpleBoot uses the linked image as-is. Select the firmware mode supported by that image.
+
+Raw BIOS PXE chainloaders such as `.pxe` and `.kpxe` require a PXE environment. Use a standalone UEFI application or a prebuilt [iPXE USB disk image](https://ipxe.org/download) for USB boot. The PC needs network access for any files fetched during boot.
+
+---
+
 ## 💻 How It Works
 
 1. You select an ISO from the UI
